@@ -12,6 +12,7 @@ type OutputConfiguration struct {
 	Invert    bool
 	RawString bool
 	NoColor   bool
+	Shorten   bool
 }
 
 func (c *OutputConfiguration) Formatter() *colorjson.Formatter {

@@ -47,4 +47,5 @@ func init() {
 	watchCommand.Flags().BoolVar(&watchOutputConfig.Expand, "expand", false, "indent JSON log messages")
 	watchCommand.Flags().BoolVar(&watchOutputConfig.Invert, "invert", false, "invert colors for light terminal themes")
 	watchCommand.Flags().BoolVar(&watchOutputConfig.RawString, "rawString", false, "print JSON strings without escaping")
+	watchCommand.Flags().BoolVarP(&watchOutputConfig.Shorten, "shorten", "s", false, "shorten lines exceeding 512 characters")
 }

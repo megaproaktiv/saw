@@ -123,7 +123,11 @@ func (b *Blade) GetEvents() {
 			} else {
 				message = aws.ToString(event.Message)
 			}
-			fmt.Println(colorizeLogLevel(message))
+			message = colorizeLogLevel(message)
+			if b.output.Shorten {
+				message = shortenLine(message)
+			}
+			fmt.Println(message)
 		}
 	}
 }
@@ -170,7 +174,11 @@ func (b *Blade) StreamEvents() {
 						message = formatEvent(formatter, event)
 					}
 					message = strings.TrimRight(message, "\n")
-					fmt.Println(colorizeLogLevel(message))
+					message = colorizeLogLevel(message)
+					if b.output.Shorten {
+						message = shortenLine(message)
+					}
+					fmt.Println(message)
 					addSeenEventIDs(event.EventId)
 				}
 			}
@@ -183,18 +191,29 @@ func (b *Blade) StreamEvents() {
 	}
 }
 
+// shortenLine truncates lines exceeding 512 characters and appends "..."
+func shortenLine(line string) string {
+	const maxLength = 512
+	if len(line) > maxLength {
+		return line[:maxLength] + "..."
+	}
+	return line
+}
+
 // colorizeLogLevel colorizes INFO and ERROR log levels in the message
 func colorizeLogLevel(message string) string {
 	// Define color formatters
 	infoColor := color.New(color.FgBlack, color.BgGreen).SprintFunc()
+	warnColor := color.New(color.FgBlack, color.BgYellow).SprintFunc()
 	errorColor := color.New(color.FgWhite, color.BgRed).SprintFunc()
-	
+
 	// Replace INFO with colored version
 	message = strings.ReplaceAll(message, "INFO", infoColor("INFO"))
-	
+	message = strings.ReplaceAll(message, "WARN", warnColor("WARN"))
+
 	// Replace ERROR with colored version
 	message = strings.ReplaceAll(message, "ERROR", errorColor("ERROR"))
-	
+
 	return message
 }
 

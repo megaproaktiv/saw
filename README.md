@@ -13,6 +13,7 @@
     - `--rawString` Print JSON strings instead of escaping ("\n", ...)
     - `--invert` Invert white colors to black for light color schemes
     - `--raw`, or `--pretty`, for `watch` and `get` commands respectively, toggles display of the timestamp and stream name prefix.
+    - `--shorten` or `-s` Truncate lines exceeding 512 characters and append "..."
 
 - Automatic log level colorization
     - `INFO` (all caps) appears with green background and black text
@@ -46,6 +47,9 @@
 
     # Watch production log group streams for api and filter for "error"
     saw watch production --prefix api --filter error
+
+    # Watch with shortened lines (truncate long lines at 512 chars)
+    saw watch production --shorten
     ```
 
 - Get
@@ -58,6 +62,9 @@
 
     # Get production log group for api between 26th June 2018 and 28th June 2018
     saw get production --prefix api --start 2018-06-26 --stop 2018-06-28
+
+    # Get logs with shortened lines (useful for logs with large payloads)
+    saw get production -s --pretty
     ```
 
 ### Profile and Region Support

@@ -52,3 +52,62 @@ Or use the fatih/color's built-in support by setting:
 ```bash
 TERM=dumb saw get my-log-group
 ```
+
+## Shorten Demo
+
+The `shorten_demo.go` program demonstrates the line shortening feature in Saw.
+
+### Running the Demo
+
+```bash
+go run examples/shorten_demo.go
+```
+
+### Features Demonstrated
+
+- **Line truncation**: Lines exceeding 512 characters are automatically truncated
+- **Visual marker**: Truncated lines are marked with "..." at the end
+- **Multiple formats**: Shows shortening across different log formats (standard logs, JSON, etc.)
+
+### Use Cases
+
+The `--shorten` (or `-s`) flag is particularly useful when:
+
+1. **Dealing with large payloads**: Logs containing large JSON objects or base64-encoded data
+2. **Terminal readability**: Preventing line wrapping that clutters the terminal
+3. **Quick scanning**: Making it easier to scan through logs without excessive scrolling
+4. **Stack traces**: Truncating very long stack traces while keeping the beginning visible
+
+### Integration with Saw
+
+The shortening feature works with both commands:
+
+```bash
+# Get logs with line shortening
+saw get production --shorten
+saw get production -s
+
+# Watch logs with line shortening
+saw watch production --shorten
+saw watch production -s
+
+# Combine with other flags
+saw get production -s --pretty --filter ERROR
+saw watch production -s --prefix api
+```
+
+### Implementation
+
+Lines are checked after colorization but before output. If a line exceeds 512 characters, it's truncated:
+
+```go
+func shortenLine(line string) string {
+    const maxLength = 512
+    if len(line) > maxLength {
+        return line[:maxLength] + "..."
+    }
+    return line
+}
+```
+
+This ensures you can still see the beginning of each log message while keeping the output clean and manageable.
