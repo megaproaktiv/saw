@@ -1,5 +1,12 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
 builds:
-  - binary: saw
+  - id: ltail
+    binary: ltail
     goos:
       - darwin
       - linux
@@ -9,41 +16,43 @@ builds:
       - arm
       - arm64
     goarm:
-      - 6
-      - 7
-      - 8
+      - "6"
+      - "7"
     env:
-      - CGO_ENANBLED=0
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
 
-archive:
-  format: tar.gz
-  files:
-    - LICENSE
+archives:
+  - id: ltail
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    files:
+      - LICENSE
+      - README.md
 
-brew:
-  name: saw
+checksum:
+  name_template: "checksums.txt"
 
-  github:
-    owner: TylerBrock
-    name: homebrew-saw
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
 
-  commit_author:
-    name: TylerBrock
-    email: tyler.brock@gmail.com
-
-  folder: Formula
-  homepage: "https://github.com/TylerBrock/saw"
-  description: "Fast, multipurpose tool for AWS CloudWatch Logs"
+brews:
+  - name: ltail
+    repository:
+      owner: megaproaktiv
+      name: homebrew-ltail
+    commit_author:
+      name: Megaproaktiv
+      email: silberkopf@gmail.com
+    directory: Formula
+    homepage: "https://www.go-on-aws.com"
+    description: "Based on TylerBrock/saw - Fast, multipurpose tool for AWS Lambda CloudWatch Logs"
+    license: MIT
 
 git:
-  short_hash: true
-
-nfpm:
-  vendor: Tyler Brock
-  homepage: https://github.com/TylerBrock/saw
-  maintainer: Tyler Brock <tyler.brock@gmail.com>
-  description: Fast, multipurpose tool for AWS CloudWatch Logs
-  license: MIT
-  formats:
-    - deb
-    - rpm
+  ignore_tags:
+    - nightly

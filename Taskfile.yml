@@ -4,14 +4,14 @@ version: "3"
 
 vars:
   GREETING: Hello, World!
-  BINARY_NAME: saw
+  BINARY_NAME: ltail
   DIST_DIR: dist
   INSTALL_DIR: ~/.local/bin
 
 tasks:
   default:
     cmds:
-      - task -l 
+      - task -l
     silent: true
 
   build:
@@ -41,3 +41,58 @@ tasks:
     desc: Remove build artifacts
     cmds:
       - rm -rf {{.DIST_DIR}}
+
+  version:
+    desc: Display current version from VERSION file
+    cmds:
+      - cat VERSION
+    silent: true
+
+  tag:
+    desc: Create git tag from VERSION file
+    cmds:
+      - |
+        VERSION=$(cat VERSION)
+        if git rev-parse $VERSION >/dev/null 2>&1; then
+          echo "Tag $VERSION already exists. Use 'task force-tag' to recreate it."
+          exit 1
+        fi
+        git tag -a $VERSION -m "Release $VERSION"
+        git push origin $VERSION
+    preconditions:
+      - test -f VERSION
+      - sh: "git diff --quiet"
+        msg: "Working directory must be clean before tagging"
+
+  force-tag:
+    desc: Create or recreate git tag from VERSION file (force)
+    cmds:
+      - |
+        VERSION=$(cat VERSION)
+        git tag -d $VERSION 2>/dev/null || true
+        git push origin :refs/tags/$VERSION 2>/dev/null || true
+        git tag -a $VERSION -m "Release $VERSION"
+        git push origin $VERSION
+    preconditions:
+      - test -f VERSION
+      - sh: "git diff --quiet"
+        msg: "Working directory must be clean before tagging"
+
+  release:
+    desc: Create a new release with goreleaser
+    deps:
+      - tag
+    cmds:
+      - goreleaser release --clean
+    preconditions:
+      - sh: "command -v goreleaser"
+        msg: "goreleaser is not installed. Install with: brew install goreleaser"
+      - test -f VERSION
+
+  release-dry-run:
+    desc: Test release build with goreleaser without publishing (no git tag required)
+    cmds:
+      - goreleaser release --snapshot --clean --skip=publish
+    preconditions:
+      - sh: "command -v goreleaser"
+        msg: "goreleaser is not installed. Install with: brew install goreleaser"

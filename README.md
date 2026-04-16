@@ -1,6 +1,8 @@
-# Saw
+# ltail
 
-`saw` is a multi-purpose tool for AWS CloudWatch Logs
+`saw` was a multi-purpose tool for AWS CloudWatch Logs
+
+Based on that, I developed L-Tail. Which uses AWS SDK version 2 and has some new features 
 
 ![Saw Gif](https://media.giphy.com/media/3fiohCfMJAKf7lhnPp/giphy.gif)
 
@@ -173,3 +175,23 @@ From root of repository: `go test -v ./...`
 - Create log streams and groups
 - Delete log streams and groups
 - Basic tests
+
+# Development
+
+## Release
+
+### 1. Check current version
+task version
+
+### 2. Update VERSION file to new version (manually)
+echo "v0.3.1" > VERSION
+
+### 3. Test the release build locally
+task release-dry-run
+
+### 4. Commit your changes
+git add .
+git commit -m "Release v0.3.1"
+
+### 5. Create release (automatically tags and releases)
+task release

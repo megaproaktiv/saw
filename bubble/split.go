@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/TylerBrock/saw/config"
+	"github.com/fatih/color"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -382,15 +383,27 @@ func (m model) renderPane(p *pane, height int, active bool, showHelp bool) strin
 		content,
 	)
 
-	// Render with exact height to maintain 50% split
-	return style.Height(height).Render(paneContent)
+	// Render with exact height and width to maintain consistent dimensions
+	return style.Height(height).Width(m.width).Render(paneContent)
 }
 
 // colorizeLogLevel colorizes INFO and ERROR log levels in the message
 func colorizeLogLevel(message string) string {
-	// Simple colorization - just highlight INFO and ERROR
-	message = strings.ReplaceAll(message, "INFO", "[INFO]")
-	message = strings.ReplaceAll(message, "ERROR", "[ERROR]")
+	// Define color formatters
+	infoColor := color.New(color.FgBlack, color.BgGreen).SprintFunc()
+	warnColor := color.New(color.FgBlack, color.BgYellow).SprintFunc()
+	errorColor := color.New(color.FgBlack, color.BgRed).SprintFunc()
+	lambdaColor := color.New(color.FgBlack, color.BgHiBlue).SprintFunc()
+
+	// Replace INFO with colored version
+	message = strings.ReplaceAll(message, "INFO", infoColor("INFO"))
+	message = strings.ReplaceAll(message, "WARN", warnColor("WARN"))
+	message = strings.ReplaceAll(message, "START RequestId", lambdaColor("START RequestId"))
+	message = strings.ReplaceAll(message, "END RequestId", lambdaColor("END RequestId"))
+
+	// Replace ERROR with colored version
+	message = strings.ReplaceAll(message, "ERROR", errorColor("ERROR"))
+
 	return message
 }
 
