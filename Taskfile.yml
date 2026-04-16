@@ -11,7 +11,7 @@ vars:
 tasks:
   default:
     cmds:
-      - echo "{{.GREETING}}"
+      - task -l 
     silent: true
 
   build:

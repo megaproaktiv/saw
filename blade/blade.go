@@ -205,11 +205,14 @@ func colorizeLogLevel(message string) string {
 	// Define color formatters
 	infoColor := color.New(color.FgBlack, color.BgGreen).SprintFunc()
 	warnColor := color.New(color.FgBlack, color.BgYellow).SprintFunc()
-	errorColor := color.New(color.FgWhite, color.BgRed).SprintFunc()
+	errorColor := color.New(color.FgBlack, color.BgRed).SprintFunc()
+	lambdaColor := color.New(color.FgBlack, color.BgHiBlue).SprintFunc()
 
 	// Replace INFO with colored version
 	message = strings.ReplaceAll(message, "INFO", infoColor("INFO"))
 	message = strings.ReplaceAll(message, "WARN", warnColor("WARN"))
+	message = strings.ReplaceAll(message, "START RequestId", lambdaColor("START RequestId"))
+	message = strings.ReplaceAll(message, "END RequestId", lambdaColor("END RequestId"))
 
 	// Replace ERROR with colored version
 	message = strings.ReplaceAll(message, "ERROR", errorColor("ERROR"))
